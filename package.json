@@ -1,0 +1,36 @@
+{
+  "name": "node_google-auth",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "npx nodemon src/server.ts",
+    "start": "npx ts-node src/server.ts",
+    "sync": "npx ts-node src/sync.ts",
+    "build": "npm i && tsc -p ."
+  },
+  "dependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/nodemailer": "^6.4.8",
+    "bcrypt": "^5.1.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.1",
+    "nodemailer": "^6.9.4",
+    "pg": "^8.11.1",
+    "sequelize": "^6.32.1",
+    "sequelize-typescript": "^2.1.5",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/node": "^20.2.5",
+    "@types/uuid": "^9.0.2",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.3"
+  }
+}
