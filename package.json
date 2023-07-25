@@ -11,6 +11,7 @@
   "dependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/nodemailer": "^6.4.8",
+    "atob": "^2.1.2",
     "bcrypt": "^5.1.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
