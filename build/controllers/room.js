@@ -67,12 +67,12 @@ const addUserToRoom = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         return;
     }
     try {
+        yield (0, mailService_1.sendInvitation)(email, roomId, userEmail, roomName);
         const status = yield (0, room_1.addUser)({ email, roomId });
         if ((status === null || status === void 0 ? void 0 : status.status) !== undefined) {
             res.send(status);
             return;
         }
-        yield (0, mailService_1.sendInvitation)(email, roomId, userEmail, roomName);
         const user = yield (0, auth_1.getByEmail)(email);
         if (user === null) {
             res.send({ status: 'NOT' });
