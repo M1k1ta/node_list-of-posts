@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { User } from '../models/User';
 import { getByEmail, googleRegister, registerUser } from '../services/auth';
 import 'dotenv/config';
@@ -8,6 +8,9 @@ import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import { decodeJwtResponse } from '../utils/decodeJwt';
 import { UserData } from '../types/UserData';
+import { addUser } from '../services/room';
+import { Room } from '../models/Room';
+import sequelize from 'sequelize';
 
 const validatePassword = (password: string) => {
   if (!password) {
@@ -17,6 +20,8 @@ const validatePassword = (password: string) => {
   if (password.length < 6) {
     return 'At least 6 characters';
   }
+
+  return '';
 };
 
 const validateEmail = (email: string) => {
@@ -29,33 +34,50 @@ const validateEmail = (email: string) => {
   if (!emailRegex.test(email)) {
     return 'Email is not valid';
   }
+
+  return '';
 };
 
 export const register = async(req: Request, res: Response) => {
   const { name, email, password } = req.body;
 
   const errors = {
+    name: '',
     email: validateEmail(email),
     password: validatePassword(password),
   };
 
-  if (errors.email || errors.password) {
+  if (!name) {
+    errors.name = 'Name is required'
+  }
+
+  if (errors.name || errors.email || errors.password) {
     res.send({ errors });
 
     return;
   }
 
-  console.log(name, email, password);
-
   try {
     await registerUser({ name, email, password });
+
+    try {
+      await addUser({ email, roomId: 1 });
+      await Room.update({ updateAt: sequelize.fn('NOW') }, {
+        where: {
+          id: 1,
+        },
+      });
+
+    } catch {
+      res.sendStatus(400);
+      return;
+    }
   } catch {
     errors.email = 'Email is already taken';
     res.send({ errors });
 
     return;
   }
-  console.log(name, email, password);
 
   res.send(createSendingUser({ name, email, password }));
 };
@@ -68,12 +90,26 @@ export const login = async(req: Request, res: Response) => {
     password: '',
   };
 
+  const validEmail = validateEmail(email);
+  const validPassword = validatePassword(password);
   const user = await getByEmail(email);
 
-  if (!user) {
+  if (validEmail) {
+    errors.email = validEmail;
+  } else if (!user) {
     errors.email = 'User with email does not exist';
-    res.send({ errors });
+  }
 
+  if (validPassword) {
+    errors.password = validPassword;
+  }
+
+  if (errors.email || errors.password) {
+    res.send({ errors });
+    return;
+  }
+
+  if (!user) {
     return;
   }
 
@@ -89,11 +125,9 @@ export const login = async(req: Request, res: Response) => {
     const accessToken = generateAccessToken(normalize(user));
 
     res.send({
-      user,
       accessToken,
     });
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log(e);
   }
 };
@@ -117,7 +151,6 @@ const createSendingUser = (existingUser: UserData | User) => {
   const accessToken = generateAccessToken(userData);
 
   return {
-    user: userData,
     accessToken,
   };
 };
@@ -125,8 +158,6 @@ const createSendingUser = (existingUser: UserData | User) => {
 export const googleAuth = async (req: Request, res: Response) => {
   const { credential } = req.body;
   const userData = decodeJwtResponse(credential);
-
-  console.log(userData);
 
   const existingUser = await getByEmail(userData.email);
 
@@ -150,8 +181,20 @@ export const googleAuth = async (req: Request, res: Response) => {
     password,
   };
 
-  await googleRegister(user);
+  try {
+    await googleRegister(user);
+
+    try {
+      await addUser({ email, roomId: 1 });
+    } catch {
+      res.sendStatus(400);
+      return;
+    }
+
+  } catch {
+    res.sendStatus(400);
+    return;
+  }
 
   res.send(createSendingUser(user));
-
 };

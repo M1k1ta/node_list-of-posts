@@ -1,11 +1,6 @@
 import express from 'express';
-import { User } from '../models/User';
-import { normalize } from '../controllers/auth';
+import { getUsers } from '../controllers/user';
 
 export const router = express.Router();
 
-router.get('/', async (req, res) => {
-  const users = await User.findAll();
-
-  res.send(users.map(user => normalize(user)));
-});
+router.get('/:roomId', getUsers);

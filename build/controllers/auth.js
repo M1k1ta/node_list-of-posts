@@ -19,6 +19,9 @@ const jwtService_1 = require("../services/jwtService");
 const uuid_1 = require("uuid");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const decodeJwt_1 = require("../utils/decodeJwt");
+const room_1 = require("../services/room");
+const Room_1 = require("../models/Room");
+const sequelize_1 = __importDefault(require("sequelize"));
 const validatePassword = (password) => {
     if (!password) {
         return 'Password is required';
@@ -26,6 +29,7 @@ const validatePassword = (password) => {
     if (password.length < 6) {
         return 'At least 6 characters';
     }
+    return '';
 };
 const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -35,27 +39,42 @@ const validateEmail = (email) => {
     if (!emailRegex.test(email)) {
         return 'Email is not valid';
     }
+    return '';
 };
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, email, password } = req.body;
     const errors = {
+        name: '',
         email: validateEmail(email),
         password: validatePassword(password),
     };
-    if (errors.email || errors.password) {
+    if (!name) {
+        errors.name = 'Name is required';
+    }
+    if (errors.name || errors.email || errors.password) {
         res.send({ errors });
         return;
     }
-    console.log(name, email, password);
     try {
         yield (0, auth_1.registerUser)({ name, email, password });
+        try {
+            yield (0, room_1.addUser)({ email, roomId: 1 });
+            yield Room_1.Room.update({ updateAt: sequelize_1.default.fn('NOW') }, {
+                where: {
+                    id: 1,
+                },
+            });
+        }
+        catch (_a) {
+            res.sendStatus(400);
+            return;
+        }
     }
-    catch (_a) {
+    catch (_b) {
         errors.email = 'Email is already taken';
         res.send({ errors });
         return;
     }
-    console.log(name, email, password);
     res.send(createSendingUser({ name, email, password }));
 });
 exports.register = register;
@@ -65,10 +84,23 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         email: '',
         password: '',
     };
+    const validEmail = validateEmail(email);
+    const validPassword = validatePassword(password);
     const user = yield (0, auth_1.getByEmail)(email);
-    if (!user) {
+    if (validEmail) {
+        errors.email = validEmail;
+    }
+    else if (!user) {
         errors.email = 'User with email does not exist';
+    }
+    if (validPassword) {
+        errors.password = validPassword;
+    }
+    if (errors.email || errors.password) {
         res.send({ errors });
+        return;
+    }
+    if (!user) {
         return;
     }
     try {
@@ -80,12 +112,10 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         const accessToken = (0, jwtService_1.generateAccessToken)((0, exports.normalize)(user));
         res.send({
-            user,
             accessToken,
         });
     }
     catch (e) {
-        // eslint-disable-next-line no-console
         console.log(e);
     }
 });
@@ -103,14 +133,12 @@ const createSendingUser = (existingUser) => {
     const userData = (0, exports.normalize)(existingUser);
     const accessToken = (0, jwtService_1.generateAccessToken)(userData);
     return {
-        user: userData,
         accessToken,
     };
 };
 const googleAuth = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { credential } = req.body;
     const userData = (0, decodeJwt_1.decodeJwtResponse)(credential);
-    console.log(userData);
     const existingUser = yield (0, auth_1.getByEmail)(userData.email);
     if (existingUser) {
         res.send(createSendingUser(existingUser));
@@ -124,7 +152,20 @@ const googleAuth = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         picture,
         password,
     };
-    yield (0, auth_1.googleRegister)(user);
+    try {
+        yield (0, auth_1.googleRegister)(user);
+        try {
+            yield (0, room_1.addUser)({ email, roomId: 1 });
+        }
+        catch (_c) {
+            res.sendStatus(400);
+            return;
+        }
+    }
+    catch (_d) {
+        res.sendStatus(400);
+        return;
+    }
     res.send(createSendingUser(user));
 });
 exports.googleAuth = googleAuth;
