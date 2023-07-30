@@ -68,14 +68,14 @@ export const addUserToRoom = async(req: Request, res: Response) => {
   }
 
   try {
+    await sendInvitation(email, roomId, userEmail, roomName);
+
     const status = await addUser({ email, roomId });
 
     if (status?.status !== undefined) {
       res.send(status);
       return;
     }
-
-    await sendInvitation(email, roomId, userEmail, roomName);
 
     const user = await getByEmail(email);
 
