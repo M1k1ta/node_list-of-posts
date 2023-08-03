@@ -6,10 +6,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.Post = void 0;
 const sequelize_1 = require("sequelize");
 const sequelize_typescript_1 = require("sequelize-typescript");
-let User = exports.User = class User extends sequelize_typescript_1.Model {
+let Post = exports.Post = class Post extends sequelize_typescript_1.Model {
 };
 __decorate([
     sequelize_typescript_1.PrimaryKey,
@@ -18,34 +18,21 @@ __decorate([
     (0, sequelize_typescript_1.Column)({
         type: sequelize_1.DataTypes.INTEGER,
     })
-], User.prototype, "id", void 0);
+], Post.prototype, "id", void 0);
 __decorate([
     (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({
         type: sequelize_1.DataTypes.STRING,
     })
-], User.prototype, "name", void 0);
-__decorate([
-    sequelize_typescript_1.PrimaryKey,
-    (0, sequelize_typescript_1.AllowNull)(false),
-    (0, sequelize_typescript_1.Column)({
-        type: sequelize_1.DataTypes.STRING,
-    })
-], User.prototype, "email", void 0);
-__decorate([
-    (0, sequelize_typescript_1.AllowNull)(true),
-    (0, sequelize_typescript_1.Column)({
-        type: sequelize_1.DataTypes.STRING,
-    })
-], User.prototype, "picture", void 0);
+], Post.prototype, "title", void 0);
 __decorate([
     (0, sequelize_typescript_1.AllowNull)(false),
     (0, sequelize_typescript_1.Column)({
         type: sequelize_1.DataTypes.STRING,
     })
-], User.prototype, "password", void 0);
-exports.User = User = __decorate([
+], Post.prototype, "body", void 0);
+exports.Post = Post = __decorate([
     (0, sequelize_typescript_1.Table)({
-        tableName: 'users',
+        tableName: 'posts',
     })
-], User);
+], Post);

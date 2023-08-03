@@ -9,10 +9,10 @@ import {
 } from 'sequelize-typescript';
 
 @Table({
-  tableName: 'bridges',
+  tableName: 'comments',
 })
 
-export class Bridge extends Model {
+export class Comment extends Model {
   @PrimaryKey
   @AutoIncrement
   @AllowNull(false)
@@ -25,11 +25,23 @@ export class Bridge extends Model {
   @Column({
     type: DataTypes.STRING,
   })
-  email: string;
+    name: string; 
+
+  @AllowNull(false)
+  @Column({
+    type: DataTypes.STRING,
+  })
+    email: string;
+
+  @AllowNull(false)
+  @Column({
+    type: DataTypes.STRING,
+  })
+    message: string;
 
   @AllowNull(false)
   @Column({
     type: DataTypes.INTEGER,
   })
-    roomId: number; 
+    postId: number;
 }

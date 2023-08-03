@@ -9,27 +9,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findUsersByRoom = void 0;
-const sequelize_1 = require("sequelize");
-const Bridge_1 = require("../models/Bridge");
-const User_1 = require("../models/User");
-const findUsersByRoom = (roomId) => __awaiter(void 0, void 0, void 0, function* () {
-    const bridges = yield Bridge_1.Bridge.findAll({
+exports.remove = exports.update = exports.create = exports.findAll = void 0;
+const Post_1 = require("../models/Post");
+const findAll = () => __awaiter(void 0, void 0, void 0, function* () {
+    return yield Post_1.Post.findAll();
+});
+exports.findAll = findAll;
+const create = ({ title, body }) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield Post_1.Post.create({ title, body });
+});
+exports.create = create;
+const update = ({ id, title, body }) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield Post_1.Post.update({ title, body }, {
+        where: { id }
+    });
+});
+exports.update = update;
+const remove = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield Post_1.Post.destroy({
         where: {
-            roomId,
+            id,
         }
     });
-    const emails = bridges.map(({ email }) => email);
-    const users = yield User_1.User.findAll({
-        where: {
-            email: {
-                [sequelize_1.Op.or]: emails,
-            }
-        },
-        order: [
-            ['updatedAt', 'DESC'],
-        ],
-    });
-    return users;
 });
-exports.findUsersByRoom = findUsersByRoom;
+exports.remove = remove;

@@ -9,10 +9,10 @@ import {
 } from 'sequelize-typescript';
 
 @Table({
-  tableName: 'users',
+  tableName: 'posts',
 })
 
-export class User extends Model {
+export class Post extends Model {
   @PrimaryKey
   @AutoIncrement
   @AllowNull(false)
@@ -20,29 +20,16 @@ export class User extends Model {
     type: DataTypes.INTEGER,
   })
     id: number;
-  
-  @AllowNull(false)
-  @Column({
-    type: DataTypes.STRING,
-  })
-    name: string; 
-
-  @PrimaryKey
-  @AllowNull(false)
-  @Column({
-    type: DataTypes.STRING,
-  })
-    email: string;
-
-  @AllowNull(true)
-  @Column({
-    type: DataTypes.STRING,
-  })
-    picture: string;
 
   @AllowNull(false)
   @Column({
     type: DataTypes.STRING,
   })
-    password: string;
+    title: string;
+
+  @AllowNull(false)
+  @Column({
+    type: DataTypes.STRING,
+  })
+    body: string;
 }

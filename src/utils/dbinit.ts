@@ -2,13 +2,11 @@ import { Sequelize } from 'sequelize-typescript';
 import { models } from '../models';
 import 'dotenv/config';
 
-const database = process.env.DATABASE;
-const username = process.env.USER;
-const password = process.env.PASSWORD;
-const host = process.env.HOST;
+const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
+const URL = `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?options=project%3D${ENDPOINT_ID}`;
 
 export const dbinit = () => new Sequelize(
-  `${database}://${username}:${password}.${host}`, 
+  URL,
   {
     models,
     dialectOptions: {

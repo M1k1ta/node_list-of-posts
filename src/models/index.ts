@@ -1,9 +1,7 @@
-import { Bridge } from './Bridge';
-import { Room } from './Room';
-import { User } from './User';
+import { Post } from './Post';
+import { Comment } from './Comment';
 
 export const models = [
-  User,
-  Room,
-  Bridge,
+  Post,
+  Comment,
 ];

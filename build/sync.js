@@ -10,22 +10,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.seedInitialData = void 0;
-const Bridge_1 = require("./models/Bridge");
-const Room_1 = require("./models/Room");
-const User_1 = require("./models/User");
+const Post_1 = require("./models/Post");
+const Comment_1 = require("./models/Comment");
 const dbinit_1 = require("./utils/dbinit");
 const seedInitialData = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield User_1.User.bulkCreate([]);
-    yield Room_1.Room.bulkCreate([]);
-    yield Bridge_1.Bridge.bulkCreate([]);
+    yield Post_1.Post.bulkCreate([]);
+    yield Comment_1.Comment.bulkCreate([]);
 });
 exports.seedInitialData = seedInitialData;
 const sync = () => __awaiter(void 0, void 0, void 0, function* () {
     (0, dbinit_1.dbinit)();
     // { force: true }
-    yield User_1.User.sync({ force: true });
-    yield Room_1.Room.sync({ force: true });
-    yield Bridge_1.Bridge.sync({ force: true });
+    yield Post_1.Post.sync({ force: true });
+    yield Comment_1.Comment.sync({ force: true });
     yield (0, exports.seedInitialData)();
 });
 sync();

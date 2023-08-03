@@ -1,20 +1,17 @@
-import { Bridge } from './models/Bridge';
-import { Room } from './models/Room';
-import { User } from './models/User';
+import { Post } from './models/Post';
+import { Comment } from './models/Comment';
 import { dbinit } from './utils/dbinit';
 
 export const seedInitialData = async() => {
-  await User.bulkCreate([]);
-  await Room.bulkCreate([]);
-  await Bridge.bulkCreate([]);
+  await Post.bulkCreate([]);
+  await Comment.bulkCreate([]);
 };
 
 const sync = async() => {
   dbinit();
   // { force: true }
-  await User.sync({ force: true });
-  await Room.sync({ force: true });
-  await Bridge.sync({ force: true });
+  await Post.sync({ force: true });
+  await Comment.sync({ force: true });
 
   await seedInitialData();
 };
